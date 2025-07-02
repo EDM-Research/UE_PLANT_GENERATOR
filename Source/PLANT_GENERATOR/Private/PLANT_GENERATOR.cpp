@@ -4,7 +4,6 @@
 #include "PLANT_GENERATORStyle.h"
 #include "PLANT_GENERATORCommands.h"
 #include "SPLANT_WIDGET.h"
-#include "LevelEditor.h"
 #include "Widgets/Docking/SDockTab.h"
 #include "Widgets/Layout/SBox.h"
 #include "Widgets/Text/STextBlock.h"

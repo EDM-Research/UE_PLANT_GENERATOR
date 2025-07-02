@@ -38,8 +38,6 @@ public class PLANT_GENERATOR : ModuleRules
 			{
 				"Projects",
 				"InputCore",
-				"EditorFramework",
-				"UnrealEd",
 				"ToolMenus",
 				"CoreUObject",
 				"Engine",

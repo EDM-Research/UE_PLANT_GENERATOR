@@ -2,10 +2,10 @@
 
 #include "Util.h"
 #include "AssetRegistry/AssetRegistryModule.h"
-#include "AssetToolsModule.h"
-#include "Factories/MaterialInstanceConstantFactoryNew.h"
-#include "UObject/SavePackage.h"
-#include "Materials/MaterialInstanceConstant.h"
+//#include "AssetToolsModule.h"
+//#include "Factories/MaterialInstanceConstantFactoryNew.h"
+//#include "UObject/SavePackage.h"
+//#include "Materials/MaterialInstanceConstant.h"
 
 Util::Util()
 {
@@ -52,7 +52,7 @@ UMaterialInterface* Util::LoadMaterialByName(const FString& MaterialPath)
 	return Cast<UMaterialInterface>(StaticLoadObject(UMaterialInterface::StaticClass(), nullptr, *MaterialPath));
 }
 
-UMaterialInstanceConstant* Util::CreateMaterialInstance(UMaterialInterface* Material, FString& PackagePath, FString& BaseAssetName)
+/*UMaterialInstanceConstant* Util::CreateMaterialInstance(UMaterialInterface* Material, FString& PackagePath, FString& BaseAssetName)
 
 {
 	FString AssetName = BaseAssetName;
@@ -151,4 +151,4 @@ UMaterialInstanceConstant* Util::CopyMaterialInstanceConstant(UMaterialInstanceC
 	FAssetRegistryModule::AssetCreated(NewMIC);
 
 	return NewMIC;
-}
+}*/

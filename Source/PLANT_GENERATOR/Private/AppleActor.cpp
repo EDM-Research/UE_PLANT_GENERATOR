@@ -32,7 +32,7 @@ void AAppleActor::Tick(float DeltaTime)
 
 void AAppleActor::GenerateApple(TMap<FString, float> parameters)
 {
-	UStaticMesh* RandomAppleMesh = Util::GetRandomMeshFromFolder(TEXT("/PLANT_GENERATOR/Apple/"));
+	UStaticMesh* RandomAppleMesh = Util::GetRandomMeshFromFolder(TEXT("/PLANT_GENERATOR/Apples/"));
 	Apple->SetStaticMesh(RandomAppleMesh);
 
 	Apple->SetWorldScale3D(FVector(10, 10, 10));
