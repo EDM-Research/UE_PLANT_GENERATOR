@@ -13,6 +13,7 @@ void SPLANT_WIDGET::Construct(const FArguments& InArgs)
     Options.Add(MakeShared<FString>("Carrot"));
     Options.Add(MakeShared<FString>("Grape"));
     Options.Add(MakeShared<FString>("Apple"));
+	Options.Add(MakeShared<FString>("Grapevine"));
 
     // Default selected option
     SelectedOption = Options[0];
@@ -46,6 +47,38 @@ void SPLANT_WIDGET::Construct(const FArguments& InArgs)
                 [
                     SNew(STextBlock)
                     .Text(this, &SPLANT_WIDGET::GetSelectedOptionText)
+                ]
+            ]
+        ]
+
+		// Grapevine-specific controls
+		+ SVerticalBox::Slot()
+		.AutoHeight()
+		.Padding(5)
+		[
+			SAssignNew(GrapevineControls, SVerticalBox)
+			// Only visible when Grapevine is selected
+			.Visibility_Lambda([this]() {
+			    return *SelectedOption == "Grapevine" ? EVisibility::Visible : EVisibility::Collapsed;
+			})
+
+            // Number of generations
+            + SVerticalBox::Slot()
+            .AutoHeight()
+            .Padding(5)
+            [
+                SNew(SHorizontalBox)
+                + SHorizontalBox::Slot()
+                .AutoWidth()
+                [
+                    SNew(STextBlock)
+                    .Text(FText::FromString("Amount:"))
+                ]
+                + SHorizontalBox::Slot()
+                [
+                    SNew(SSpinBox<int>)
+                    .Value(this->amount)
+                    .OnValueChanged(this, &SPLANT_WIDGET::OnAmountChanged)
                 ]
             ]
         ]
@@ -277,6 +310,10 @@ void SPLANT_WIDGET::OnSelectionChanged(TSharedPtr<FString> NewValue, ESelectInfo
     {
         AppleControls->SetVisibility(*SelectedOption == "Apple" ? EVisibility::Visible : EVisibility::Collapsed);
     }
+	if (GrapevineControls.IsValid())
+	{
+		GrapevineControls->SetVisibility(*SelectedOption == "Grapevine" ? EVisibility::Visible : EVisibility::Collapsed);
+	}
 }
 
 // Get selected dropdown text
@@ -331,13 +368,22 @@ FReply SPLANT_WIDGET::OnGenerateClicked()
         }
     }
     else if (*SelectedOption == "Apple")
-    {
-        for (int i = 0; i < amount;i++)
-        {
-            FVector location(i * 1000.0f, 0.0f, 0.0f); 
-            FTransform transform(location); 
-            UCrop_Generator::Create_variation(Plant_types::Apple, transform, parameters);
-        }
-    }
+	{
+		for (int i = 0; i < amount;i++)
+		{
+			FVector location(i * 1000.0f, 0.0f, 0.0f);
+			FTransform transform(location);
+			UCrop_Generator::Create_variation(Plant_types::Apple, transform, parameters);
+		}
+	}
+	else if (*SelectedOption == "Grapevine")
+	{
+		for (int i = 0; i < amount; i++)
+		{
+			FVector location(i * 100.0f, 0.0f, 0.0f);
+			FTransform transform(location);
+			UCrop_Generator::Create_variation(Plant_types::Grapevine, transform, parameters);
+		}
+	}
     return FReply::Handled();
 }

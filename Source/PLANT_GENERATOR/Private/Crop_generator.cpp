@@ -3,6 +3,7 @@
 #include "CarrotActor.h"
 #include "CornActor.h"
 #include "AppleActor.h"
+#include "GrapevineActor.h"
 
 AActor* UCrop_Generator::Create_variation(Plant_types GeneratorType, FTransform Location, TMap<FString, float> parameters)
 {
@@ -43,6 +44,15 @@ AActor* UCrop_Generator::Create_variation(Plant_types GeneratorType, FTransform 
 				Apple->GenerateApple(parameters); 
 			}
 			return Apple; 
+		}
+	case Plant_types::Grapevine:
+		{
+			AGrapevineActor* Grapevine = GWorld->SpawnActor<AGrapevineActor>(Location.GetLocation(), Location.GetRotation().Rotator());
+			if (Grapevine)
+			{
+				Grapevine->GenerateGrapevine(parameters);
+			}
+			return Grapevine;
 		}
 	default:
 		return nullptr;

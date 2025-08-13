@@ -19,4 +19,6 @@ public:
 	static void SavePackage(UMaterialInstanceConstant* DynMaterial);
 	static UMaterialInstanceConstant* CopyMaterialInstanceConstant(UMaterialInstanceConstant* SourceMIC,
 	                                                        const FString& BaseAssetName, const FString& PackagePath);*/
+
+	static float GetGoldenAngle() { return 137.5f; } // Phyllotaxis constant
 };
