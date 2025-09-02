@@ -284,7 +284,7 @@ void AGrapevineActor::GenerateAllPetioleSplines(TMap<FString, float> parameters)
 void AGrapevineActor::GenerateCanePetioleSplines(int32 CaneGlobalId, float PetioleLengthMin, float PetioleLengthMax)
 {
     USplineComponent* CaneSpline = CaneSplines[CaneGlobalId];
-    bPetioleHasGrapeCluster.Add(FMath::RandBool()); // Randomly decide if the first petiole has a grape cluster
+    // bPetioleHasGrapeCluster.Add(FMath::RandBool()); // Randomly decide if the first petiole has a grape cluster
 
     TArray<FVector> InitialPetiolePositions;
     TArray<FVector> InitialConnectionPositions;
@@ -343,11 +343,11 @@ void AGrapevineActor::GenerateCanePetioleSplines(int32 CaneGlobalId, float Petio
         PetioleSplines.Add(PetioleSpline);
     }
 
-    for (int i = 3; i < NumPetioles; i++)
-    {
-        // All petioles apart from the first one are always leaves
-        bPetioleHasGrapeCluster.Add(false);
-    }
+	for (int i = 0; i < NumPetioles; i++)
+	{
+		bool bHasCluster = (FMath::FRand() < 0.25f); // 5% chance
+		bPetioleHasGrapeCluster.Add(bHasCluster & (i < 1));
+	}
 }
 
 void AGrapevineActor::GenerateAllPetioleSplinesMeshes()
