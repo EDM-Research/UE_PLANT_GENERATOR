@@ -12,11 +12,11 @@ AAppleActor::AAppleActor()
 	m_MinSaturationVariation = 0.8f;
 	m_MaxSaturationVariation = 1.2f;
 	m_MinBrightnessVariation = 4.0f;
-	m_MaxBrightnessVariation = 5.0f;
+	m_MaxBrightnessVariation = 5.f;
 	m_MinContrastVariation = 0.8f;
 	m_MaxContrastVariation = 1.2f;
-	m_minScale = 0.8;
-	m_maxScale = 1.2;
+	m_minScale = 0.66;
+	m_maxScale = 1.5;
 }
 
 void AAppleActor::BeginPlay()
