@@ -11,7 +11,7 @@ AAppleActor::AAppleActor()
 	
 	m_MinSaturationVariation = 0.8f;
 	m_MaxSaturationVariation = 1.2f;
-	m_MinBrightnessVariation = 2.0f;
+	m_MinBrightnessVariation = 4.0f;
 	m_MaxBrightnessVariation = 5.0f;
 	m_MinContrastVariation = 0.8f;
 	m_MaxContrastVariation = 1.2f;
@@ -67,7 +67,14 @@ randomScale,
 randomScale
 );
 	
+	
 	Apple->SetWorldScale3D(NewScale);
+	
+	FRotator CurrentRotation = Apple->GetComponentRotation();
+	float RandomYaw = FMath::FRandRange(0.0f, 360.0f);
+	FRotator NewRotation = FRotator(CurrentRotation.Pitch, RandomYaw, CurrentRotation.Roll);
+
+	Apple->SetWorldRotation(NewRotation);
 	
 }
 
