@@ -11,8 +11,8 @@ AAppleActor::AAppleActor()
 	
 	m_MinSaturationVariation = 0.8f;
 	m_MaxSaturationVariation = 1.2f;
-	m_MinBrightnessVariation = 1.2f;
-	m_MaxBrightnessVariation = 1.5f;
+	m_MinBrightnessVariation = 2.0f;
+	m_MaxBrightnessVariation = 5.0f;
 	m_MinContrastVariation = 0.8f;
 	m_MaxContrastVariation = 1.2f;
 	m_minScale = 0.8;
