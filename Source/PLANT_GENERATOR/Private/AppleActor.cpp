@@ -9,13 +9,14 @@ AAppleActor::AAppleActor()
 	Apple->SetMobility(EComponentMobility::Movable);
 
 	
-	m_MinSaturationVariation = 0.5f;
-	m_MaxSaturationVariation = 1.5f;
-	m_MinBrightnessVariation = 0.5f;
+	m_MinSaturationVariation = 0.8f;
+	m_MaxSaturationVariation = 1.2f;
+	m_MinBrightnessVariation = 1.2f;
 	m_MaxBrightnessVariation = 1.5f;
-	m_MinContrastVariation = 0.5f;
-	m_MaxContrastVariation = 1.5f;
-
+	m_MinContrastVariation = 0.8f;
+	m_MaxContrastVariation = 1.2f;
+	m_minScale = 0.8;
+	m_maxScale = 1.2;
 }
 
 void AAppleActor::BeginPlay()
@@ -35,7 +36,7 @@ void AAppleActor::GenerateApple(TMap<FString, float> parameters)
 	UStaticMesh* RandomAppleMesh = Util::GetRandomMeshFromFolder(TEXT("/PLANT_GENERATOR/Apples/"));
 	Apple->SetStaticMesh(RandomAppleMesh);
 
-	Apple->SetWorldScale3D(FVector(10, 10, 10));
+	//Apple->SetWorldScale3D(FVector(10, 10, 10));
 
 	// Create the material instance asset
 	UMaterialInterface* BaseMaterial = Apple->GetMaterial(0);
@@ -50,6 +51,16 @@ void AAppleActor::GenerateApple(TMap<FString, float> parameters)
 	DynMaterial->SetScalarParameterValue("Contrast", Contrast);
 
 	Apple->SetMaterial(0, DynMaterial);
+
+	float randomScale = FMath::FRandRange(m_minScale, m_maxScale);
+
+	FVector NewScale = FVector(
+randomScale,
+randomScale,
+randomScale
+);
+	
+	Apple->SetWorldScale3D(NewScale);
 	
 }
 

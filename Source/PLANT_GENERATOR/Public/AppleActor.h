@@ -31,4 +31,6 @@ private:
 	float m_MaxBrightnessVariation;
 	float m_MinContrastVariation;
 	float m_MaxContrastVariation;
+	float m_minScale;
+	float m_maxScale;
 };
