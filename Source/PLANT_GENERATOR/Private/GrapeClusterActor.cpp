@@ -75,6 +75,8 @@ void AGrapeClusterActor::GenerateGrapeCluster(TMap<FString, float> parameters)
     const float PedicelLengthMin = parameters.FindRef("PedicelLengthMin", 25.);
     const float PedicelLengthMax = parameters.FindRef("PedicelLengthMax", 200.);
     const bool IsPurple = (bool)parameters.FindRef("IsPurple", false);
+    const bool PhysicsEnabled = (bool)parameters.FindRef("PhysicsEnabled", false);
+    const float GrapeDetachChance = parameters.FindRef("GrapeDetachChance", 0.0f);
 
     const int RachisSegments = FMath::RandRange( 3.0f, 6.0f);
     const float RachisBendMagnitude = FMath::RandRange( 150.0f, 1000.0f);
@@ -115,7 +117,7 @@ void AGrapeClusterActor::GenerateGrapeCluster(TMap<FString, float> parameters)
     {
         USplineMeshComponent* RachisSplineMesh = NewObject<USplineMeshComponent>(this, FName(*FString::Printf(TEXT("RachisSplineMesh_%d"), i)));
         RachisSplineMesh->SetMobility(EComponentMobility::Movable);
-        RachisSplineMesh->AttachToComponent(RachisSpline, FAttachmentTransformRules::KeepRelativeTransform); 
+        RachisSplineMesh->AttachToComponent(SceneRoot, FAttachmentTransformRules::KeepRelativeTransform); 
         RachisSplineMesh->RegisterComponent(); 
 
         FVector RStart, RTangent, REnd, RTangentEnd;
@@ -181,7 +183,7 @@ void AGrapeClusterActor::GenerateGrapeCluster(TMap<FString, float> parameters)
         // Create spline for pedicel
         USplineComponent* PedicelSpline = NewObject<USplineComponent>(this, FName(*FString::Printf(TEXT("PedicelSpline_%d"), i)));
         PedicelSpline->SetMobility(EComponentMobility::Movable);
-        PedicelSpline->AttachToComponent(RachisSpline, FAttachmentTransformRules::KeepRelativeTransform); 
+        PedicelSpline->AttachToComponent(SceneRoot, FAttachmentTransformRules::KeepRelativeTransform); 
         PedicelSpline->RegisterComponent();
         PedicelSplines.Add(PedicelSpline);
 
@@ -192,7 +194,7 @@ void AGrapeClusterActor::GenerateGrapeCluster(TMap<FString, float> parameters)
         // Create a spline mesh component for the pedicel
         USplineMeshComponent* PedicelMesh = NewObject<USplineMeshComponent>(this, FName(*FString::Printf(TEXT("PedicelMesh_%d"), i)));
         PedicelMesh->SetMobility(EComponentMobility::Movable);
-        PedicelMesh->AttachToComponent(PedicelSpline, FAttachmentTransformRules::KeepRelativeTransform); 
+        PedicelMesh->AttachToComponent(SceneRoot, FAttachmentTransformRules::KeepRelativeTransform); 
         PedicelMesh->RegisterComponent();
         PedicelMeshes.Add(PedicelMesh); 
         
@@ -216,13 +218,13 @@ void AGrapeClusterActor::GenerateGrapeCluster(TMap<FString, float> parameters)
 
         UStaticMeshComponent* GrapeComp = NewObject<UStaticMeshComponent>(this, FName(*FString::Printf(TEXT("Grape_%d"), i)));
         GrapeComp->SetMobility(EComponentMobility::Movable);
-        GrapeComp->AttachToComponent(PedicelSplines[i], FAttachmentTransformRules::KeepRelativeTransform); 
-        GrapeComp->RegisterComponent();
         GrapeMeshes.Add(GrapeComp); 
 
         if (GrapeComp)
         {
             GrapeComp->SetStaticMesh(RandomGrapeMesh);
+            GrapeComp->AttachToComponent(SceneRoot, FAttachmentTransformRules::KeepRelativeTransform); 
+            GrapeComp->RegisterComponent();
 
             FTransform LocalTransform;
             FVector GrapePosition = InitialGrapePositions[i];
@@ -255,9 +257,54 @@ void AGrapeClusterActor::GenerateGrapeCluster(TMap<FString, float> parameters)
             GrapeComp->SetMaterial(0, DynMaterial);
         }
     }
+    if (PhysicsEnabled)
+    {
+        int counter = 0;
+        for (UStaticMeshComponent* GrapeComp : GrapeMeshes){
+            GrapeComp->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+            GrapeComp->SetCollisionResponseToAllChannels(ECR_Overlap);
+            GrapeComp->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+                
+            // First grape becomes the physics root
+            if (counter == 0)
+            {
+                GrapeComp->SetSimulatePhysics(true);
+                GrapeComp->SetEnableGravity(true);
+            }
+            else
+            {
+                // Only weld if we pass the detach chance check
+                bool bShouldDetach = FMath::FRand() < GrapeDetachChance;
+        
+                if (!bShouldDetach)
+                {
+                    FAttachmentTransformRules WeldRules(EAttachmentRule::KeepWorld, true);
+                    WeldRules.bWeldSimulatedBodies = true;
+                    GrapeComp->AttachToComponent(GrapeMeshes[0], WeldRules);
+                }
+                else
+                {
+                    // Detach and enable independent physics
+                    GrapeComp->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+                    GrapeComp->SetSimulatePhysics(true);
+                    GrapeComp->SetEnableGravity(true);
+                }
+            }
+            counter++;
+        }
 
-    FVector TopOfStemWorld = RachisSpline->GetLocationAtSplinePoint(0, ESplineCoordinateSpace::World);
-    FVector CurrentRootWorld = SceneRoot->GetComponentLocation();
-    FVector Offset = TopOfStemWorld - CurrentRootWorld;
-    RachisSpline->AddWorldOffset(-Offset);
+        for (USplineMeshComponent* Mesh : RachisSplineMeshes)
+        {
+            FAttachmentTransformRules WeldRules(EAttachmentRule::KeepWorld, true);
+            WeldRules.bWeldSimulatedBodies = true;
+            Mesh->AttachToComponent(GrapeMeshes[0], WeldRules);
+        }
+        
+        for (USplineMeshComponent* Mesh : PedicelMeshes)
+        {
+            FAttachmentTransformRules WeldRules(EAttachmentRule::KeepWorld, true);
+            WeldRules.bWeldSimulatedBodies = true;
+            Mesh->AttachToComponent(GrapeMeshes[0], WeldRules);
+        }
+    }
 }
