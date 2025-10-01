@@ -24,7 +24,7 @@ public:
     virtual void Tick(float DeltaTime) override;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Grape Cluster")
-    USceneComponent* SceneRoot;
+    UStaticMeshComponent* PhysicsRoot;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Grape Cluster")
     USplineComponent* RachisSpline;
