@@ -125,6 +125,7 @@ void AGrapeClusterActor::GenerateGrapeCluster(TMap<FString, float> parameters)
         RachisSplineMesh->AttachToComponent(PhysicsRoot, FAttachmentTransformRules::KeepRelativeTransform); 
         RachisSplineMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
         RachisSplineMesh->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+        RachisSplineMesh->SetCollisionEnabled(ECollisionEnabled::Type::PhysicsOnly);
         RachisSplineMesh->RegisterComponent(); 
 
         FVector RStart, RTangent, REnd, RTangentEnd;
@@ -206,6 +207,7 @@ void AGrapeClusterActor::GenerateGrapeCluster(TMap<FString, float> parameters)
         PedicelMesh->AttachToComponent(PhysicsRoot, FAttachmentTransformRules::KeepRelativeTransform); 
         PedicelMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
         PedicelMesh->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+        PedicelMesh->SetCollisionEnabled(ECollisionEnabled::Type::PhysicsOnly);
         PedicelMesh->RegisterComponent();
         PedicelMeshes.Add(PedicelMesh); 
         
@@ -274,5 +276,17 @@ void AGrapeClusterActor::GenerateGrapeCluster(TMap<FString, float> parameters)
     {
         PhysicsRoot->SetSimulatePhysics(true);
         PhysicsRoot->SetEnableGravity(true);
+
+        for (UStaticMeshComponent* GrapeComp : GrapeMeshes){
+            
+            bool bShouldDetach = FMath::FRand() < GrapeDetachChance;
+    
+            if (bShouldDetach)
+            {
+                GrapeComp->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+                GrapeComp->SetSimulatePhysics(true);
+                GrapeComp->SetEnableGravity(true);
+            }
+        }
     }
 }
