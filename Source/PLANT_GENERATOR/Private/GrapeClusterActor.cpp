@@ -237,7 +237,7 @@ void AGrapeClusterActor::GenerateGrapeCluster(TMap<FString, float> parameters)
         {
             GrapeComp->SetStaticMesh(RandomGrapeMesh);
             GrapeComp->AttachToComponent(PhysicsRoot, FAttachmentTransformRules::KeepRelativeTransform); 
-            GrapeComp->SetCollisionResponseToAllChannels(ECR_Ignore);
+            GrapeComp->SetCollisionResponseToAllChannels(ECR_Block);
             GrapeComp->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
             GrapeComp->RegisterComponent();
 
@@ -272,6 +272,12 @@ void AGrapeClusterActor::GenerateGrapeCluster(TMap<FString, float> parameters)
             GrapeComp->SetMaterial(0, DynMaterial);
         }
     }
+    
+    FVector TopOfStemWorld = RachisSpline->GetLocationAtSplinePoint(0, ESplineCoordinateSpace::World);
+    FVector CurrentRootWorld = PhysicsRoot->GetComponentLocation();
+    FVector Offset = TopOfStemWorld - CurrentRootWorld;
+    RachisSpline->AddWorldOffset(-Offset);
+    
     if (PhysicsEnabled)
     {
         PhysicsRoot->SetSimulatePhysics(true);
